@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank</title>
+    <!-- bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+</head>
+
+<body class="bg-primary text-dark bg-opacity-25">
+    <header>
+        <h2>My Banking</h2>
+        <ul>
+              <li>
+                <a href="./home.html">Home</a>
+            </li>
+            <li>
+                <a href="./index.html">Register</a>
+            </li>
+            <li>
+                <a href="./login.html">Login</a>
+            </li>
+        </ul>
+    </header>
+    <section>
+        <h1 class="text-white">Welcome</h1>
+        <h3>Online Banking Sevices</h3>
+        <div class="rows">
+            <div class="col">
+            
+                <h4>Deposit</h4>
+                <form class="form">
+                    <div class="mb-4">
+                        <input type="number" class="form-control" id="depositAmount" placeholder="Enter Your Amount">
+                    </div>
+                    <div class="mb-4">
+                        <input type="password" class="form-control" id="depositPass" placeholder="Password">
+                    </div>
+                    <button onclick="Deposit()" type="button" class="btn btn-primary">Deposit</button>
+                </form>
+                <div id="depositResult"></div>
+            </div>
+            <div class="col">
+                <h4>Withdraw</h4>
+                <form id="form">
+                    <div class="mb-4">
+                        <input type="number" class="form-control" id="acnumber" placeholder="Enter Your Amount">
+                    </div>
+                    <div class="mb-4">
+                        <input type="password" class="form-control" id="userpass" placeholder="Password">
+                    </div>
+                    <button onclick="withdraw()" type="button" class="btn btn-primary">Withdraw</button>
+                </form>
+                 <div id="withdrawResult"></div>
+            </div>
+        </div>
+
+<div class="row">
+        <h1 style="text-align: center; color: white;">Transaction History</h1> 
+<table class="table table-bordered text-center">
+        <thead class="table-primary">
+            <tr>
+                <th style="color: white;">Date</th>
+                <th style="color: white;">Type</th>
+                <th style="color: white;">Amount</th>
+                <th style="color: white;">Balance</th>
+            </tr>
+        </thead>
+        <tbody id="allTransactions"></tbody>
+    </table>
+</div>
+    </section>
+    <script>
+        function Deposit() {
+            const dep = {
+                Amount: Number(depositAmount.value),
+                passWord: depositPass.value,
+            }
+            console.log(dep);
+            if (!dep.Amount || !dep.passWord) {
+                alert("please fill the form");
+            }
+            else{
+            let existing = JSON.parse(sessionStorage.getItem(dep.passWord));
+            if (existing) {
+                dep.Amount = Number(existing.Amount) + Number(dep.Amount); 
+            }
+            sessionStorage.setItem(dep.passWord, JSON.stringify(dep));
+            depositResult.innerHTML = `Balance:${dep.Amount}`;
+            alert("Deposite Successfull✅")
+             const allTransactions = document.getElementById("allTransactions");
+    const now = new Date();
+    const dateStr = now.toLocaleString(); 
+
+    const row = document.createElement("tr");
+    row.innerHTML = `
+        <td>${dateStr}</td>
+        <td>Deposit</td>
+        <td>₹${Number(dep.Amount) - (existing ? Number(existing.Amount) : 0)}</td>
+        <td>₹${dep.Amount}</td>
+    `;
+    allTransactions.appendChild(row);
+    depositAmount.value=''
+    depositPass.value=''
+        }
+        }
+       function withdraw() {
+    const amountW = Number(acnumber.value);
+    const passwordW = userpass.value;
+    const withdrawResult = document.getElementById("withdrawResult"); 
+
+    if (!amountW || !passwordW) {
+        alert("please fill the form");
+        return; 
+    }
+    else{
+    let existing = JSON.parse(sessionStorage.getItem(passwordW));
+    if (!existing) { 
+        alert("Account not found");
+        return;
+    }
+
+    if (amountW > existing.Amount) {
+        alert("Insufficient balance");
+        return;
+    } else {
+        existing.Amount = existing.Amount - amountW; 
+        sessionStorage.setItem(passwordW, JSON.stringify(existing));
+        alert("Withdraw Successful✅")
+        withdrawResult.innerHTML = `Balance: ${existing.Amount}`;
+    }
+       const allTransactions = document.getElementById("allTransactions");
+    const now = new Date();
+    const dateStr = now.toLocaleString(); 
+
+    const row = document.createElement("tr");
+    row.innerHTML = `
+        <td>${dateStr}</td>
+        <td>Withdraw</td>
+        <td>₹${amountW}</td>
+        <td>₹${existing.Amount}</td>
+    `;
+    allTransactions.appendChild(row);
+    acnumber.value = '';
+    userpass.value = '';
+}
+}
+
+
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0
+        }
+
+        header {
+            height: 60px;
+            background-color: rgb(135, 182, 248);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        h2 {
+            color: white;
+            margin-left: 50px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        ul {
+            display: flex;
+            align-items: center;
+        }
+
+        li {
+            list-style: none;
+            margin-right: 60px;
+
+        }
+
+        a {
+            text-decoration: none;
+            font-size: larger;
+            color: white;
+        }
+
+        .rows {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px;
+        }
+
+        .col {
+            border: 2px solid rgb(175, 175, 226);
+            margin: 0 130px;
+        }
+
+        h1,
+        h3 {
+            font-family: 'Times New Roman', Times, serif;
+            text-align: center;
+            color: white;
+        }
+
+        h4 {
+            text-align: center;
+        }
+
+        form {
+            width: 80%;
+            /* height: 270px; */
+            padding: 25px 30px 0px;
+            margin: 10px 50px;
+            /* border: 2px solid rgb(175, 175, 226);  */
+        }
+
+        button {
+            margin-left: 36%;
+            margin-bottom: 0px;
+        }
+
+        h5 {
+            color: white;
+            margin: 0 30px 20px;
+        }
+
+        p {
+            text-align: center;
+            color: rgb(15, 100, 219);
+        }
+        #depositResult{
+            color: white;
+            margin: 0 30px 20px;
+        }
+        #withdrawResult{
+            color: white;
+            margin: 0 30px 20px;
+        }
+    </style>
+</body>
+
+</html>
